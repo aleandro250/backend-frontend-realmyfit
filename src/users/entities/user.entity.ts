@@ -21,6 +21,6 @@ export class User {
     @Column({ type: 'varchar', length: 255 })
     docNumber;
 
-    @Column({ type: 'varchar', length: 255 })
+    @Column({ type: 'varchar', length: 55 })
     miTest;
 }
