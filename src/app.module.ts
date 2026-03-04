@@ -29,10 +29,10 @@ import config from './config';
       }),
     }),
     DatabaseModule,
+    AuthModule,
     UsersModule,
     RolesModule,
     PermissionsModule,
-    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
