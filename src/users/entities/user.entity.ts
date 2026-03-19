@@ -1,11 +1,17 @@
-import { Role } from 'src/roles/entities/role.entity';
-import { 
-    Column, 
-    Entity, 
-    JoinTable, 
-    ManyToMany, 
-    PrimaryGeneratedColumn, 
+import { Role } from '../../roles/entities/role.entity';
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
+import { EventRegistration } from '../../event-registrations/entities/event-registration.entity';
+import { UserMembership } from '../../memberships/entities/user-membership.entity';
+import { Review } from '../../reviews/entities/review.entity';
+import { Payment } from '../../payments/entities/payment.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity()
 export class User {
@@ -38,4 +44,19 @@ export class User {
         name: 'user_roles'
     })
     roles: Role[];
+
+    @OneToMany(() => EventRegistration, (reg) => reg.user)
+    eventRegistrations: EventRegistration[];
+
+    @OneToMany(() => UserMembership, (um) => um.user)
+    userMemberships: UserMembership[];
+
+    @OneToMany(() => Review, (review) => review.user)
+    reviews: Review[];
+
+    @OneToMany(() => Payment, (payment) => payment.user)
+    payments: Payment[];
+
+    @OneToMany(() => Order, (order) => order.user)
+    orders: Order[];
 }

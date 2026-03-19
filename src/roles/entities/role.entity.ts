@@ -1,9 +1,7 @@
-import { ModuleEntity } from '../../modules/entities/module.entity';
 import { User } from '../../users/entities/user.entity';
 import {
     Column,
     Entity,
-    JoinTable,
     ManyToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -14,19 +12,11 @@ export class Role {
     id: number;
 
     @Column({ type: 'varchar', length: 255, unique: true })
-    name;
+    name: string;
 
-    @Column({ type: 'varchar', length: 255 })
-    description;
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    description: string;
 
     @ManyToMany(() => User, user => user.roles)
     users: User[];
-
-    @ManyToMany(() => ModuleEntity, { eager: true })
-    @JoinTable({
-        name: 'role_modules',
-        joinColumn: { name: 'role_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'module_id', referencedColumnName: 'id' }
-    })
-    modules: ModuleEntity[];
 }

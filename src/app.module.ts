@@ -8,15 +8,24 @@ import * as Joi from 'joi';
 import { enviroments } from './enviroments';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
-import { PermissionsModule } from './permissions/permissions.module';
 import { AuthModule } from './auth/auth.module';
-import { ModulesModule } from './modules/modules.module';
+
+import { ProductsModule } from './products/products.module';
+import { EventsModule } from './events/events.module';
+import { EventRegistrationsModule } from './event-registrations/event-registrations.module';
+import { MembershipsModule } from './memberships/memberships.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { ContactsModule } from './contacts/contacts.module';
+import { PaymentsModule } from './payments/payments.module';
+import { TrainersModule } from './trainers/trainers.module';
+import { MachinesModule } from './machines/machines.module';
+import { OrdersModule } from './orders/orders.module';
 import config from './config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: enviroments[process.env.NODE_ENV || '.env'],
+      envFilePath: '.env',
       load: [config],
       isGlobal: true,
       validationSchema: Joi.object({
@@ -33,10 +42,18 @@ import config from './config';
     AuthModule,
     UsersModule,
     RolesModule,
-    PermissionsModule,
-    ModulesModule,
+    ProductsModule,
+    EventsModule,
+    EventRegistrationsModule,
+    MembershipsModule,
+    ReviewsModule,
+    ContactsModule,
+    PaymentsModule,
+    TrainersModule,
+    MachinesModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

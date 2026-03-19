@@ -1,15 +1,16 @@
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/auth/models/roles.model';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { Modules } from '../../../auth/decorators/modules.decorator';
-import { ModulesGuard } from '../../../auth/guards/modules.guard.guard';
 import { CreateUserDto, UpdateUserDto } from 'src/users/dtos/user.dto';
 import { UsersService } from '../../../users/services/users/users.service';
 import { JwtAuthGuard } from '../../../auth/guards/auth.guard';
 
 @ApiBearerAuth()
-@Modules('users')
-@UseGuards(JwtAuthGuard, ModulesGuard)
+@Roles(Role.ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
 

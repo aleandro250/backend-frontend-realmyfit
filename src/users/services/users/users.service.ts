@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { CreateUserDto, UpdateUserDto } from 'src/users/dtos/user.dto';
-import { RolesService } from 'src/roles/services/roles.service';
+import { User } from '../../entities/user.entity';
+import { CreateUserDto, UpdateUserDto } from '../../dtos/user.dto';
+import { RolesService } from '../../../roles/services/roles.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -32,12 +32,7 @@ export class UsersService {
     async findByEmail(email: string) {
         const user = await this.userRepo.findOne({
             where: { email },
-            relations: {
-                roles: {
-                    modules: true,
-                },
-            },
-            // relations: ['roles'], //clave
+            relations: ['roles'],
         });
 
         if (!user) {
