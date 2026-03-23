@@ -1,5 +1,6 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-navbar',
@@ -7,10 +8,19 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   isScrolled = false;
   isMobileMenuOpen = false;
   isServicesExpanded = false;
+  totalItems = 0;
+
+  constructor(private cartService: CartService) {}
+
+  ngOnInit() {
+    this.cartService.cart$.subscribe(items => {
+      this.totalItems = items.reduce((acc, item) => acc + item.qty, 0);
+    });
+  }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {

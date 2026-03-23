@@ -28,12 +28,13 @@
       </li>
 
       <li><a routerLink="/eventos" routerLinkActive="active-link" (click)="closeMobileMenu()">Eventos</a></li>
-      <li><a routerLink="/#acerca" (click)="closeMobileMenu()">Nosotros</a></li>
+      <li><a routerLink="/resenas" routerLinkActive="active-link" (click)="closeMobileMenu()">Reseñas</a></li>
+      <li><a routerLink="/contacto" routerLinkActive="active-link" (click)="closeMobileMenu()">Contacto</a></li>
 
       <!-- Mobile ONLY actions inside the sliding menu -->
       <li class="mobile-only mt-4">
         <button class="btn-secondary w-100 mb-2" routerLink="/cart" (click)="closeMobileMenu()">
-          🛒 Ver Carrito
+          🛒 Ver Carrito ({{ totalItems }})
         </button>
         <button class="btn-primary w-100" routerLink="/login" (click)="closeMobileMenu()">Iniciar Sesión</button>
       </li>
@@ -49,7 +50,7 @@
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
         </svg>
         <!-- Badge badge indicator placeholder -->
-        <span class="cart-badge">0</span>
+        <span class="cart-badge">{{ totalItems }}</span>
       </button>
 
       <button class="btn-primary" routerLink="/login">Iniciar Sesión</button>

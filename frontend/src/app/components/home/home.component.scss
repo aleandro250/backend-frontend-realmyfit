@@ -1,1 +1,275 @@
-/* Global styles from Hero and Features are autonomous, no extra wrapper needed currently. */
+/* Modern Stats Section */
+.stats-section {
+  padding: 4rem 0;
+  position: relative;
+  z-index: 2;
+  margin-top: 2rem; /* bajado para que no quede muy pegado arriba */
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  padding: 2rem 1.5rem;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.8), rgba(15, 15, 15, 0.9));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(39, 174, 96, 0.15);
+    border-color: rgba(39, 174, 96, 0.3);
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-heading);
+    text-shadow: 0 0 15px rgba(39, 174, 96, 0.4);
+    background: linear-gradient(90deg, #fff, var(--color-primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+}
+
+/* Call to Action Section */
+.cta-section {
+  padding: 8rem 0;
+  position: relative;
+  z-index: 2;
+}
+
+.glow-effect {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(39, 174, 96, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    animation: rotateSlow 20s linear infinite;
+  }
+}
+
+.cta-box {
+  padding: 5rem 3rem;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.9) 100%);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .cta-content {
+    flex: 1;
+    max-width: 600px;
+    z-index: 2;
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 1.5rem;
+      color: var(--color-text-main);
+    }
+    
+    p {
+      font-size: 1.15rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+  }
+
+  .cta-visual {
+    position: absolute;
+    right: 5%;
+    top: 10%;
+    width: 300px;
+    height: 300px;
+    z-index: 1;
+    pointer-events: none;
+
+    .abstract-shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+    }
+
+    .shape-1 {
+      width: 200px;
+      height: 200px;
+      background-color: var(--color-primary);
+      opacity: 0.3;
+      top: 0;
+      right: 0;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-2 {
+      width: 150px;
+      height: 150px;
+      background-color: #4facfe;
+      opacity: 0.2;
+      bottom: 0;
+      left: 50px;
+      animation: float 8s ease-in-out infinite reverse;
+    }
+  }
+}
+
+.glow-btn {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.4);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 0 30px rgba(39, 174, 96, 0.6);
+    transform: translateY(-3px) scale(1.05);
+  }
+}
+
+@keyframes rotateSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Rediseño responsivo general extra si se requiere centrado */
+.text-center { text-align: center; }
+
+/* Why Choose Us */
+.why-us-section {
+  padding: 6rem 0;
+  position: relative;
+  z-index: 2;
+
+  .why-us-header {
+    h2 { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--color-text-main); }
+    p { font-size: 1.1rem; color: var(--color-text-muted); }
+  }
+
+  .why-us-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+
+    .why-card {
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      text-align: center;
+      transition: all 0.4s ease;
+      cursor: default;
+
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(39, 174, 96, 0.1);
+        border-color: rgba(39, 174, 96, 0.3);
+
+        .icon-circle {
+          transform: scale(1.1) rotate(5deg);
+          box-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+        }
+      }
+
+      .icon-circle {
+        width: 70px;
+        height: 70px;
+        background: rgba(39, 174, 96, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem auto;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+      }
+
+      h4 { margin-bottom: 1rem; color: var(--color-text-main); font-size: 1.3rem; }
+      p { color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; }
+    }
+  }
+}
+
+/* Testimonials */
+.testimonials-section {
+  padding: 4rem 0 8rem 0;
+  position: relative;
+  z-index: 2;
+
+  h2 { font-size: 2.5rem; margin-bottom: 3rem; color: var(--color-text-main); }
+
+  .testimonial-wrapper {
+    display: flex;
+    justify-content: center;
+
+    .testimonial-card {
+      max-width: 650px;
+      padding: 3rem 4rem;
+      border-radius: 24px;
+      position: relative;
+
+      .quote {
+        font-size: 1.25rem;
+        font-style: italic;
+        color: var(--color-text-main);
+        line-height: 1.8;
+      }
+
+      .author {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+
+        .avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.05);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+        }
+
+        strong { color: var(--color-text-main); font-size: 1.1rem; }
+        .text-primary { font-size: 0.9rem; }
+        .d-block { display: block; }
+      }
+    }
+  }
+}

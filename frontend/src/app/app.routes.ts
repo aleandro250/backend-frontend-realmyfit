@@ -7,7 +7,10 @@ import { MaquinasComponent } from './components/maquinas/maquinas';
 import { MembresiasComponent } from './components/membresias/membresias';
 import { CartComponent } from './components/cart/cart';
 import { EventosComponent } from './components/eventos/eventos'; // The component TS is eventos.ts
-
+import { Resenas } from './components/resenas/resenas';
+import { Contacto } from './components/contacto/contacto';
+import { MaquinaDetalle } from './components/maquina-detalle/maquina-detalle';
+import { EventoInscripcion } from './components/evento-inscripcion/evento-inscripcion';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
@@ -17,5 +20,9 @@ export const routes: Routes = [
   { path: 'membresias', component: MembresiasComponent },
   { path: 'eventos', component: EventosComponent },
   { path: 'cart', component: CartComponent },
+  { path: 'resenas', component: Resenas },
+  { path: 'contacto', component: Contacto },
+  { path: 'ficha-tecnica', component: MaquinaDetalle },
+  { path: 'inscripcion', component: EventoInscripcion },
   { path: '**', redirectTo: '' }
 ];
