@@ -29,9 +29,15 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
         this.isLoading = false;
-        // User successfully authenticated! Navigate wherever, maybe a dashboard or generic redirect
-        this.router.navigate(['/']);
-        // Might optionally trigger a toastr or navbar refresh
+        // Check if user is admin
+        const user = res.user;
+        const isAdmin = user && user.roles && user.roles.some((r: any) => r.name === 'ADMIN' || r === 'ADMIN');
+        
+        if (isAdmin) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         this.isLoading = false;

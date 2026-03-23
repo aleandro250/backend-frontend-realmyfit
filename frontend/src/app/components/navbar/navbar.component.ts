@@ -1,13 +1,18 @@
-import { Component, HostListener } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, HostListener, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive], // Standalone needs Router link imports for template usage
+  imports: [RouterLink, RouterLinkActive, CommonModule], // Added CommonModule for *ngIf
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  
   isScrolled = false;
   isMobileMenuOpen = false;
   isServicesExpanded = false;
@@ -27,6 +32,20 @@ export class NavbarComponent {
   closeMobileMenu() {
     this.isMobileMenuOpen = false;
     this.isServicesExpanded = false;
+  }
+
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
+  get isAdmin(): boolean {
+    const roles = this.authService.getUserRoles();
+    return roles.includes('ADMIN');
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 
   toggleServices(event: Event) {

@@ -41,4 +41,9 @@ export class AuthService {
     const userStr = localStorage.getItem('gym_user');
     return userStr ? JSON.parse(userStr) : null;
   }
+
+  getUserRoles(): string[] {
+    const user = this.getUser();
+    return user && user.roles ? user.roles : [];
+  }
 }

@@ -12,9 +12,4 @@ export class LoginDto {
     @IsNotEmpty()
     @ApiProperty()
     readonly password: string;
-
-    @IsBoolean()
-    @IsNotEmpty()
-    @ApiProperty()
-    readonly isActive: boolean;
 }

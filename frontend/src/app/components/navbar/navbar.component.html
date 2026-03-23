@@ -29,13 +29,15 @@
 
       <li><a routerLink="/eventos" routerLinkActive="active-link" (click)="closeMobileMenu()">Eventos</a></li>
       <li><a routerLink="/#acerca" (click)="closeMobileMenu()">Nosotros</a></li>
+      <li *ngIf="isAdmin"><a routerLink="/admin" class="admin-link" (click)="closeMobileMenu()">📊 Panel Admin</a></li>
 
       <!-- Mobile ONLY actions inside the sliding menu -->
       <li class="mobile-only mt-4">
         <button class="btn-secondary w-100 mb-2" routerLink="/cart" (click)="closeMobileMenu()">
           🛒 Ver Carrito
         </button>
-        <button class="btn-primary w-100" routerLink="/login" (click)="closeMobileMenu()">Iniciar Sesión</button>
+        <button *ngIf="!isAuthenticated" class="btn-primary w-100" routerLink="/login" (click)="closeMobileMenu()">Iniciar Sesión</button>
+        <button *ngIf="isAuthenticated" class="btn-outline w-100" (click)="logout(); closeMobileMenu()">Cerrar Sesión</button>
       </li>
     </ul>
 
@@ -52,7 +54,15 @@
         <span class="cart-badge">0</span>
       </button>
 
-      <button class="btn-primary" routerLink="/login">Iniciar Sesión</button>
+      <button *ngIf="isAdmin" class="btn-outline admin-desktop" routerLink="/admin">Panel Admin</button>
+      <button *ngIf="!isAuthenticated" class="btn-primary" routerLink="/login">Iniciar Sesión</button>
+      <button *ngIf="isAuthenticated" class="btn-icon logout-btn" (click)="logout()" title="Cerrar Sesión">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
     </div>
 
     <!-- Mobile Hamburger Toggle -->

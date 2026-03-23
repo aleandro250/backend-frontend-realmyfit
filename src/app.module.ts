@@ -20,10 +20,13 @@ import { PaymentsModule } from './payments/payments.module';
 import { TrainersModule } from './trainers/trainers.module';
 import { MachinesModule } from './machines/machines.module';
 import { OrdersModule } from './orders/orders.module';
+import { FilesModule } from './files/files.module';
 import config from './config';
 
 @Module({
   imports: [
+    // ...
+    FilesModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       load: [config],
