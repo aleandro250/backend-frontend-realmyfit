@@ -43,7 +43,7 @@ import { ProductsService } from '../../services/products.service';
             <td>\${{ product.price }}</td>
             <td>{{ product.stock }}</td>
             <td>
-              <button class="btn-icon">Editar</button>
+              <button class="btn-icon" (click)="editProduct(product)">Editar</button>
               <button class="btn-icon delete" (click)="deleteProduct(product.id)">Eliminar</button>
             </td>
           </tr>
@@ -59,7 +59,7 @@ import { ProductsService } from '../../services/products.service';
     <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
       <div class="modal-content glass" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>Nuevo Producto</h3>
+          <h3>{{ isEditing ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
           <button class="btn-close" (click)="closeModal()">&times;</button>
         </div>
         
@@ -104,7 +104,7 @@ import { ProductsService } from '../../services/products.service';
           <div class="modal-actions">
             <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
             <button type="submit" class="btn-primary" [disabled]="!productForm.valid || isSubmitting">
-              {{ isSubmitting ? 'Guardando...' : 'Crear Producto' }}
+              {{ isSubmitting ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Crear Producto') }}
             </button>
           </div>
         </form>
@@ -288,6 +288,8 @@ export class AdminProductsComponent implements OnInit {
   
   showModal = false;
   isSubmitting = false;
+  isEditing = false;
+  editingProductId: number | null = null;
   
   newProduct = {
     name: '',
@@ -322,9 +324,26 @@ export class AdminProductsComponent implements OnInit {
 
   openModal() {
     this.showModal = true;
+    this.isEditing = false;
+    this.editingProductId = null;
     this.newProduct = { name: '', description: '', price: 0, stock: 0, imageUrl: '' };
     this.selectedFile = null;
     this.imagePreview = null;
+  }
+
+  editProduct(product: any) {
+    this.showModal = true;
+    this.isEditing = true;
+    this.editingProductId = product.id;
+    this.newProduct = { 
+      name: product.name, 
+      description: product.description, 
+      price: product.price, 
+      stock: product.stock, 
+      imageUrl: product.imageUrl 
+    };
+    this.imagePreview = product.imageUrl;
+    this.selectedFile = null;
   }
 
   closeModal() {
@@ -352,38 +371,62 @@ export class AdminProductsComponent implements OnInit {
   }
 
   submitProduct() {
-    if (!this.selectedFile) {
+    if (!this.selectedFile && !this.isEditing) {
         alert('Por favor selecciona una imagen');
         return;
     }
 
     this.isSubmitting = true;
     
-    // 1. Upload the image first
-    this.productsService.uploadImage(this.selectedFile).subscribe({
-      next: (uploadRes) => {
-        // 2. Once uploaded, use the returned URL to create the product
-        this.newProduct.imageUrl = uploadRes.url;
-        
-        this.productsService.createProduct(this.newProduct).subscribe({
-          next: () => {
-            this.isSubmitting = false;
-            this.closeModal();
-            this.fetchProducts(); // Refresh list
+    // If a new file is selected, upload it first
+    if (this.selectedFile) {
+        this.productsService.uploadImage(this.selectedFile).subscribe({
+          next: (uploadRes) => {
+            this.newProduct.imageUrl = uploadRes.url;
+            this.saveProductData();
           },
           error: (err) => {
-            console.error('Error creating product', err);
-            alert('Error al crear el producto');
+            console.error('Error uploading image', err);
+            alert('Error al subir la imagen');
             this.isSubmitting = false;
           }
         });
-      },
-      error: (err) => {
-        console.error('Error uploading image', err);
-        alert('Error al subir la imagen');
-        this.isSubmitting = false;
-      }
-    });
+    } else {
+        // Use existing image URL (for editing)
+        this.saveProductData();
+    }
+  }
+
+  private saveProductData() {
+    const dataToSave = {
+        ...this.newProduct,
+        price: Number(this.newProduct.price),
+        stock: Number(this.newProduct.stock)
+    };
+
+    if (this.isEditing && this.editingProductId) {
+        this.productsService.updateProduct(this.editingProductId, dataToSave).subscribe({
+            next: () => this.onSaveSuccess(),
+            error: (err) => this.onSaveError(err)
+        });
+    } else {
+        this.productsService.createProduct(dataToSave).subscribe({
+            next: () => this.onSaveSuccess(),
+            error: (err) => this.onSaveError(err)
+        });
+    }
+  }
+
+  private onSaveSuccess() {
+    this.isSubmitting = false;
+    this.closeModal();
+    this.fetchProducts(); // Refresh list
+  }
+
+  private onSaveError(err: any) {
+    console.error('Error saving product', err);
+    alert('Error al guardar el producto');
+    this.isSubmitting = false;
   }
 
   deleteProduct(id: number) {

@@ -29,6 +29,10 @@ export class ProductsService {
     return this.http.delete(`${this.apiUrl}/products/${id}`, { headers: this.getHeaders() });
   }
 
+  updateProduct(id: number, product: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/products/${id}`, product, { headers: this.getHeaders() });
+  }
+
   uploadImage(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);

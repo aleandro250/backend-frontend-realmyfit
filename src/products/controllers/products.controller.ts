@@ -39,8 +39,15 @@ export class ProductsController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Update a product by id' })
-    update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
-        return this.productsService.update(id, dto);
+    async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
+        console.log('Updating product', id, 'with DTO:', dto);
+        try {
+            const result = await this.productsService.update(id, dto);
+            return result;
+        } catch (error) {
+            console.error('Error in ProductsController.update:', error);
+            throw error;
+        }
     }
 
     @Delete(':id')
