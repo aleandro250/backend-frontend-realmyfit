@@ -1,7 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductsService } from '../../services/products.service';
+import { environment } from '../../../environments/environment';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-admin-products',
@@ -14,102 +16,119 @@ import { ProductsService } from '../../services/products.service';
     </div>
     
     <div class="table-container glass">
-      <div *ngIf="loading" class="loading-state">Cargando productos...</div>
+      @if (loading) {
+        <div class="loading-state">Cargando productos...</div>
+      }
 
-      <div *ngIf="errorMessage" class="error-state">
-        <p>Error: {{ errorMessage }}</p>
-        <button class="btn-primary" (click)="fetchProducts()">Reintentar</button>
-      </div>
+      @if (errorMessage) {
+        <div class="error-state">
+          <p>Error: {{ errorMessage }}</p>
+          <button class="btn-primary" (click)="fetchProducts()">Reintentar</button>
+        </div>
+      }
       
-      <table *ngIf="!loading && !errorMessage && products.length > 0">
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let product of products">
-            <td>
-              <div class="product-thumb glass" [style.backgroundImage]="'url(' + product.imageUrl + ')'"></div>
-            </td>
-            <td>
-              <div class="product-name">{{ product.name }}</div>
-              <div class="product-desc">{{ product.description | slice:0:30 }}...</div>
-            </td>
-            <td>\${{ product.price }}</td>
-            <td>{{ product.stock }}</td>
-            <td>
-              <button class="btn-icon" (click)="editProduct(product)">Editar</button>
-              <button class="btn-icon delete" (click)="deleteProduct(product.id)">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      @if (!loading && !errorMessage && products.length > 0) {
+        <table>
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products; track product.id) {
+              <tr>
+                <td>
+                  <div class="product-thumb glass" [style.backgroundImage]="'url(' + getImageUrl(product.imageUrl) + ')'"></div>
+                </td>
+                <td>
+                  <div class="product-name">{{ product.name }}</div>
+                  <div class="product-desc">{{ product.description | slice:0:30 }}...</div>
+                </td>
+                <td>\${{ product.price }}</td>
+                <td>{{ product.stock }}</td>
+                <td>
+                  <button class="btn-icon" (click)="editProduct(product)">Editar</button>
+                  <button class="btn-icon delete" (click)="deleteProduct(product.id)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
 
-      <div *ngIf="!loading && !errorMessage && products.length === 0" class="empty-state">
-        No se encontraron productos.
-      </div>
+      @if (!loading && !errorMessage && products.length === 0) {
+        <div class="empty-state">
+          No se encontraron productos.
+        </div>
+      }
     </div>
 
     <!-- Add Product Modal -->
-    <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
-      <div class="modal-content glass" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>{{ isEditing ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
-          <button class="btn-close" (click)="closeModal()">&times;</button>
-        </div>
-        
-        <form (ngSubmit)="submitProduct()" #productForm="ngForm" class="product-form">
-          <div class="form-group">
-            <label>Nombre del Producto</label>
-            <input type="text" name="name" [(ngModel)]="newProduct.name" required placeholder="Ej. Proteína Whey" class="glass-input">
+    @if (showModal) {
+      <div class="modal-overlay" (click)="closeModal()">
+        <div class="modal-content glass" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>{{ isEditing ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+            <button class="btn-close" (click)="closeModal()">&times;</button>
           </div>
           
-          <div class="form-row">
+          <form (ngSubmit)="submitProduct()" #productForm="ngForm" class="product-form">
             <div class="form-group">
-              <label>Precio ($)</label>
-              <input type="number" name="price" [(ngModel)]="newProduct.price" required placeholder="0.00" class="glass-input">
+              <label>Nombre del Producto</label>
+              <input type="text" name="name" [(ngModel)]="newProduct.name" required placeholder="Ej. Proteína Whey" class="glass-input">
             </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Precio ($)</label>
+                <input type="number" name="price" [(ngModel)]="newProduct.price" required placeholder="0.00" class="glass-input">
+              </div>
+              <div class="form-group">
+                <label>Stock</label>
+                <input type="number" name="stock" [(ngModel)]="newProduct.stock" required placeholder="0" class="glass-input">
+              </div>
+            </div>
+  
             <div class="form-group">
-              <label>Stock</label>
-              <input type="number" name="stock" [(ngModel)]="newProduct.stock" required placeholder="0" class="glass-input">
+              <label>Imagen del Producto</label>
+              <div class="file-upload-wrapper glass-input">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input" id="fileInput">
+                <label for="fileInput" class="file-label">
+                  @if (!selectedFile) {
+                    <span>📁 Seleccionar imagen...</span>
+                  } @else {
+                    <span>📄 {{ selectedFile.name }}</span>
+                  }
+                </label>
+              </div>
+              <!-- Image Preview -->
+              @if (imagePreview) {
+                <div class="image-preview-container mt-2">
+                  <img [src]="imagePreview" class="image-preview glass">
+                  <button type="button" class="btn-remove-image" (click)="removeImage()">&times;</button>
+                </div>
+              }
             </div>
-          </div>
-
-          <div class="form-group">
-            <label>Imagen del Producto</label>
-            <div class="file-upload-wrapper glass-input">
-              <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-input" id="fileInput">
-              <label for="fileInput" class="file-label">
-                <span *ngIf="!selectedFile">📁 Seleccionar imagen...</span>
-                <span *ngIf="selectedFile">📄 {{ selectedFile.name }}</span>
-              </label>
+  
+            <div class="form-group">
+              <label>Descripción</label>
+              <textarea name="description" [(ngModel)]="newProduct.description" required placeholder="Describe el producto..." class="glass-input"></textarea>
             </div>
-            <!-- Image Preview -->
-            <div *ngIf="imagePreview" class="image-preview-container mt-2">
-              <img [src]="imagePreview" class="image-preview glass">
-              <button type="button" class="btn-remove-image" (click)="removeImage()">&times;</button>
+  
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+              <button type="submit" class="btn-primary" [disabled]="!productForm.valid || isSubmitting">
+                {{ isSubmitting ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Crear Producto') }}
+              </button>
             </div>
-          </div>
-
-          <div class="form-group">
-            <label>Descripción</label>
-            <textarea name="description" [(ngModel)]="newProduct.description" required placeholder="Describe el producto..." class="glass-input"></textarea>
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
-            <button type="submit" class="btn-primary" [disabled]="!productForm.valid || isSubmitting">
-              {{ isSubmitting ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Crear Producto') }}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    }
   `,
   styles: [`
     .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
@@ -151,136 +170,33 @@ import { ProductsService } from '../../services/products.service';
 
     .modal-header {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: space-between; align-items: center;
       margin-bottom: 1.5rem;
       h3 { margin: 0; font-size: 1.5rem; }
     }
 
-    .btn-close {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+    .btn-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
 
     /* Form Styles */
-    .product-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      label { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .glass-input {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 0.75rem;
-      color: #fff;
-      font-family: inherit;
-      outline: none;
-      transition: 0.3s;
-      
-      &:focus {
-        border-color: var(--color-primary, #27ae60);
-        background: rgba(255,255,255,0.08);
-      }
-    }
-
-    textarea.glass-input {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #fff;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-      &:hover { background: rgba(255,255,255,0.1); }
-    }
-
-    /* File Upload Styles */
-    .file-upload-wrapper {
-      position: relative;
-      padding: 0;
-      overflow: hidden;
-      cursor: pointer;
-    }
-    .file-input {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 2;
-    }
-    .file-label {
-      display: block;
-      padding: 0.75rem;
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.6);
-      cursor: pointer;
-    }
-    .image-preview-container {
-      position: relative;
-      width: 100%;
-      max-height: 200px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .image-preview {
-      width: 100%;
-      height: auto;
-      max-height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-    .btn-remove-image {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: rgba(255, 77, 77, 0.8);
-      border: none;
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      z-index: 3;
-    }
+    .product-form { display: flex; flex-direction: column; gap: 1.25rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; label { font-size: 0.85rem; color: rgba(255,255,255,0.6); } }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .glass-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem; color: #fff; font-family: inherit; outline: none; transition: 0.3s; &:focus { border-color: var(--color-primary, #27ae60); background: rgba(255,255,255,0.08); } }
+    textarea.glass-input { min-height: 100px; resize: vertical; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+    .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: 0.3s; &:hover { background: rgba(255,255,255,0.1); } }
+    .file-upload-wrapper { position: relative; padding: 0; overflow: hidden; cursor: pointer; }
+    .file-input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+    .file-label { display: block; padding: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.6); cursor: pointer; }
+    .image-preview-container { position: relative; width: 100%; max-height: 200px; border-radius: 8px; overflow: hidden; }
+    .image-preview { width: 100%; height: auto; max-height: 200px; object-fit: cover; display: block; }
+    .btn-remove-image { position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.8); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3; }
     .mt-2 { margin-top: 0.5rem; }
   `]
 })
 export class AdminProductsComponent implements OnInit {
   private productsService = inject(ProductsService);
+  private cdr = inject(ChangeDetectorRef);
   
   products: any[] = [];
   loading = true;
@@ -290,6 +206,8 @@ export class AdminProductsComponent implements OnInit {
   isSubmitting = false;
   isEditing = false;
   editingProductId: number | null = null;
+  selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
   
   newProduct = {
     name: '',
@@ -299,27 +217,36 @@ export class AdminProductsComponent implements OnInit {
     imageUrl: ''
   };
 
-  selectedFile: File | null = null;
-  imagePreview: string | null = null;
-
   ngOnInit() {
     this.fetchProducts();
+  }
+
+  getImageUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${environment.apiUrl}${url}`;
   }
 
   fetchProducts() {
     this.loading = true;
     this.errorMessage = '';
-    this.productsService.getProducts().subscribe({
-      next: (data) => {
-        this.products = data;
+    this.cdr.detectChanges();
+
+    this.productsService.getProducts()
+      .pipe(finalize(() => {
         this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching products', err);
-        this.errorMessage = err.status === 401 ? 'No autorizado.' : 'Error de conexión';
-        this.loading = false;
-      }
-    });
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (data) => {
+          this.products = data;
+          console.log('Productos cargados:', this.products);
+        },
+        error: (err) => {
+          console.error('Error fetching products:', err);
+          this.errorMessage = err.status === 401 ? 'No autorizado.' : 'Error de conexión';
+        }
+      });
   }
 
   openModal() {
@@ -342,7 +269,7 @@ export class AdminProductsComponent implements OnInit {
       stock: product.stock, 
       imageUrl: product.imageUrl 
     };
-    this.imagePreview = product.imageUrl;
+    this.imagePreview = this.getImageUrl(product.imageUrl);
     this.selectedFile = null;
   }
 
@@ -354,8 +281,6 @@ export class AdminProductsComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
-      
-      // Generate preview
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result as string;
@@ -367,7 +292,8 @@ export class AdminProductsComponent implements OnInit {
   removeImage() {
     this.selectedFile = null;
     this.imagePreview = null;
-    (document.getElementById('fileInput') as HTMLInputElement).value = '';
+    const input = document.getElementById('fileInput') as HTMLInputElement;
+    if (input) input.value = '';
   }
 
   submitProduct() {
@@ -378,7 +304,6 @@ export class AdminProductsComponent implements OnInit {
 
     this.isSubmitting = true;
     
-    // If a new file is selected, upload it first
     if (this.selectedFile) {
         this.productsService.uploadImage(this.selectedFile).subscribe({
           next: (uploadRes) => {
@@ -392,7 +317,6 @@ export class AdminProductsComponent implements OnInit {
           }
         });
     } else {
-        // Use existing image URL (for editing)
         this.saveProductData();
     }
   }
@@ -420,7 +344,7 @@ export class AdminProductsComponent implements OnInit {
   private onSaveSuccess() {
     this.isSubmitting = false;
     this.closeModal();
-    this.fetchProducts(); // Refresh list
+    this.fetchProducts();
   }
 
   private onSaveError(err: any) {

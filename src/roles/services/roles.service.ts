@@ -29,4 +29,8 @@ export class RolesService {
     async findByIds(ids: number[]) {
         return await this.roleRepo.find({ where: { id: In(ids) } });
     }
+
+    async findByName(name: string) {
+        return await this.roleRepo.findOne({ where: { name } });
+    }
 }

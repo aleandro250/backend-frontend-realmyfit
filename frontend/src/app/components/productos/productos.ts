@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductsService } from '../../services/products.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-productos',
@@ -11,6 +12,12 @@ import { ProductsService } from '../../services/products.service';
 })
 export class ProductosComponent implements OnInit {
   private productsService = inject(ProductsService);
+
+  getImageUrl(url: string | null | undefined): string {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${environment.apiUrl}${url}`;
+  }
   
   productos: any[] = [];
   loading = true;

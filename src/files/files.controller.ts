@@ -49,7 +49,7 @@ export class FilesController {
     // Return the URL for the frontend
     // Assuming backend runs on port 3000
     return {
-      url: `http://localhost:3000/uploads/${file.filename}`,
+      url: `/uploads/${file.filename}`,
       filename: file.filename
     };
   }

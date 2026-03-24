@@ -25,7 +25,8 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
   app.enableCors();
   
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  const uploadsPath = join(process.cwd(), 'uploads');
+  app.useStaticAssets(uploadsPath, {
     prefix: '/uploads/',
   });
 

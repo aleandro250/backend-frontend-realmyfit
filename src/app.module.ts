@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SeedController } from './seed.controller';
 import { DatabaseModule } from './database/database.module';
 
 import { ConfigModule } from '@nestjs/config';
@@ -56,7 +57,7 @@ import config from './config';
     MachinesModule,
     OrdersModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, SeedController],
   providers: [AppService],
 })
 export class AppModule { }
