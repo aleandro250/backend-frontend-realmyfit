@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-admin',
@@ -10,8 +11,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   templateUrl: './admin.html',
   styleUrl: './admin.scss'
 })
-export class AdminComponent {
+export class AdminComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
+  private authService = inject(AuthService);
+
+  userName: string = 'Administrador';
+  userInitials: string = 'A';
 
   menuItems = [
     { label: 'Dashboard', icon: 'grid', route: '/admin/dashboard', svg: this.sanitize('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>') },
@@ -20,6 +25,15 @@ export class AdminComponent {
     { label: 'Membresías', icon: 'credit-card', route: '/admin/memberships', svg: this.sanitize('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>') },
     { label: 'Eventos', icon: 'calendar', route: '/admin/events', svg: this.sanitize('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>') }
   ];
+
+  ngOnInit() {
+    this.authService.currentUser.subscribe((user: any) => {
+      if (user) {
+        this.userName = user.name || (user.email ? user.email.split('@')[0] : 'Administrador');
+        this.userInitials = this.userName.charAt(0).toUpperCase();
+      }
+    });
+  }
 
   private sanitize(svg: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(svg);

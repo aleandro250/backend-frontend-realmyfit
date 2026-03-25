@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -11,6 +11,9 @@ export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
+  private userSubject = new BehaviorSubject<any>(this.getUser());
+  public currentUser = this.userSubject.asObservable();
+
   login(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password }).pipe(
       tap(response => {
@@ -18,6 +21,7 @@ export class AuthService {
           localStorage.setItem('gym_token', response.access_token);
           if (response.user) {
             localStorage.setItem('gym_user', JSON.stringify(response.user));
+            this.userSubject.next(response.user);
           }
         }
       }),
@@ -31,6 +35,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('gym_token');
     localStorage.removeItem('gym_user');
+    this.userSubject.next(null);
   }
 
   isAuthenticated(): boolean {
@@ -39,7 +44,11 @@ export class AuthService {
 
   getUser() {
     const userStr = localStorage.getItem('gym_user');
-    return userStr ? JSON.parse(userStr) : null;
+    try {
+      return userStr ? JSON.parse(userStr) : null;
+    } catch {
+      return null;
+    }
   }
 
   getUserRoles(): string[] {

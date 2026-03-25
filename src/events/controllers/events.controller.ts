@@ -10,15 +10,15 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../auth/models/roles.model';
 
-@ApiBearerAuth()
-@Roles(Role.ADMIN)
-@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Events')
 @Controller('events')
 export class EventsController {
     constructor(private readonly eventsService: EventsService) {}
 
     @Post()
+    @ApiBearerAuth()
+    @Roles(Role.ADMIN)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiOperation({ summary: 'Create a new event' })
     @ApiResponse({ status: 201, description: 'Event created successfully' })
     create(@Body() dto: CreateEventDto) {
@@ -38,12 +38,18 @@ export class EventsController {
     }
 
     @Patch(':id')
+    @ApiBearerAuth()
+    @Roles(Role.ADMIN)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiOperation({ summary: 'Update an event by id' })
     update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateEventDto) {
         return this.eventsService.update(id, dto);
     }
 
     @Delete(':id')
+    @ApiBearerAuth()
+    @Roles(Role.ADMIN)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @HttpCode(204)
     @ApiOperation({ summary: 'Delete an event by id' })
     remove(@Param('id', ParseIntPipe) id: number) {
