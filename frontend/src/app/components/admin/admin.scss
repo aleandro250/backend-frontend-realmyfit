@@ -268,3 +268,107 @@
   flex-grow: 1;
   padding: 2rem;
 }
+
+/* Responsive Admin Layout */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-right: 1rem;
+  padding: 0;
+  
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    border-radius: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    background: rgba(10, 10, 12, 0.95);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .admin-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    backdrop-filter: blur(4px);
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .admin-top-bar {
+    justify-content: flex-start;
+    padding: 1rem;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .page-title {
+    margin-right: auto;
+    font-size: 1.1rem;
+  }
+
+  .user-profile {
+    padding: 0;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .admin-main {
+    padding: 0;
+    width: 100%;
+  }
+
+  .view-container {
+    padding: 1rem;
+  }
+
+  /* Make tables responsive */
+  ::ng-deep .table-container {
+    padding: 0.5rem;
+    overflow-x: auto;
+    width: 100%;
+    border-radius: 0;
+    border: none;
+  }
+  
+  ::ng-deep table {
+    min-width: 600px;
+    
+    th, td {
+      padding: 0.75rem;
+      white-space: nowrap;
+    }
+  }
+}

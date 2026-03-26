@@ -41,16 +41,16 @@ import { finalize } from 'rxjs';
           <tbody>
             @for (product of products; track product.id) {
               <tr>
-                <td>
+                <td data-label="Imagen">
                   <div class="product-thumb glass" [style.backgroundImage]="'url(' + getImageUrl(product.imageUrl) + ')'"></div>
                 </td>
-                <td>
+                <td data-label="Producto">
                   <div class="product-name">{{ product.name }}</div>
                   <div class="product-desc">{{ product.description | slice:0:30 }}...</div>
                 </td>
-                <td>\${{ product.price }}</td>
-                <td>{{ product.stock }}</td>
-                <td>
+                <td data-label="Precio">\${{ product.price }}</td>
+                <td data-label="Stock">{{ product.stock }}</td>
+                <td data-label="Acciones">
                   <button class="btn-icon" (click)="editProduct(product)">Editar</button>
                   <button class="btn-icon delete" (click)="deleteProduct(product.id)">Eliminar</button>
                 </td>
@@ -166,6 +166,8 @@ import { finalize } from 'rxjs';
       max-width: 500px;
       padding: 2rem;
       position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .modal-header {
@@ -192,6 +194,53 @@ import { finalize } from 'rxjs';
     .image-preview { width: 100%; height: auto; max-height: 200px; object-fit: cover; display: block; }
     .btn-remove-image { position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.8); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3; }
     .mt-2 { margin-top: 0.5rem; }
+
+    /* Mobile Responsive Table and Header */
+    @media (max-width: 768px) {
+      .view-header { flex-direction: column; align-items: stretch; gap: 1rem; }
+      .view-header button { width: 100%; }
+      
+      table, thead, tbody, th, td, tr { display: block; width: 100%; box-sizing: border-box; }
+      thead { display: none; }
+      tr { 
+        margin-bottom: 1.5rem; 
+        background: rgba(255,255,255,0.02); 
+        border-radius: 12px; 
+        padding: 1rem; 
+        border: 1px solid rgba(255,255,255,0.05); 
+      }
+      
+      td { 
+        display: grid !important; 
+        grid-template-columns: 100px 1fr; 
+        align-items: center;
+        padding: 0.75rem 0; 
+        border-bottom: 1px solid rgba(255,255,255,0.05); 
+        text-align: right;
+        min-height: 40px;
+        color: white;
+      }
+      td:last-child { 
+        border-bottom: none; 
+        display: flex !important; 
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem; 
+      }
+      
+      td::before { 
+        content: attr(data-label); 
+        font-weight: 500; 
+        color: rgba(255,255,255,0.6); 
+        text-align: left; 
+        display: block;
+      }
+      
+      td > div { justify-self: end; }
+      .product-thumb { justify-self: end; }
+      .product-desc { display: none; }
+      .btn-icon { width: 100%; margin: 0; padding: 0.75rem; text-align: center; }
+    }
   `]
 })
 export class AdminProductsComponent implements OnInit {
