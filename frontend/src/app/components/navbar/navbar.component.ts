@@ -1,6 +1,7 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,13 +10,21 @@ import { CommonModule } from '@angular/common';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
-  
+  private cartService = inject(CartService);
   isScrolled = false;
   isMobileMenuOpen = false;
   isServicesExpanded = false;
+  totalItems = 0;
+
+
+  ngOnInit() {
+    this.cartService.cart$.subscribe(items => {
+      this.totalItems = items.reduce((acc, item) => acc + item.qty, 0);
+    });
+  }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {

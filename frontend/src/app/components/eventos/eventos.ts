@@ -1,12 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { EventsService } from '../../services/events.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-eventos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './eventos.component.html',
   styleUrls: ['./eventos.component.scss'],
 })

@@ -26,8 +26,8 @@
           <p class="machine-desc">{{ machine.desc }}</p>
         </div>
         
-        <div class="machine-overlay">
-          <button class="btn-primary w-100">Ver Ficha Técnica</button>
+        <div class="machine-actions">
+          <button class="btn-primary w-100" [routerLink]="['/ficha-tecnica']" [state]="{ maquina: machine }">Ver Ficha Técnica</button>
         </div>
       </div>
     }

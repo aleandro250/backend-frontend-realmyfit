@@ -6,7 +6,7 @@ import { EntrenadoresComponent } from './components/entrenadores/entrenadores';
 import { MaquinasComponent } from './components/maquinas/maquinas';
 import { MembresiasComponent } from './components/membresias/membresias';
 import { CartComponent } from './components/cart/cart';
-import { EventosComponent } from './components/eventos/eventos';
+import { EventosComponent } from './components/eventos/eventos'; // The component TS is eventos.ts
 import { AdminDashboardComponent } from './components/admin/dashboard';
 import { AdminComponent } from './components/admin/admin';
 
@@ -15,6 +15,10 @@ import { AdminProductsComponent } from './components/admin/products';
 
 import { AdminPlaceholderComponent } from './components/admin/placeholder';
 
+import { Resenas } from './components/resenas/resenas';
+import { Contacto } from './components/contacto/contacto';
+import { MaquinaDetalle } from './components/maquina-detalle/maquina-detalle';
+import { EventoInscripcion } from './components/evento-inscripcion/evento-inscripcion';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
@@ -36,5 +40,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
+  { path: 'resenas', component: Resenas },
+  { path: 'contacto', component: Contacto },
+  { path: 'ficha-tecnica', component: MaquinaDetalle },
+  { path: 'inscripcion', component: EventoInscripcion },
   { path: '**', redirectTo: '' }
 ];

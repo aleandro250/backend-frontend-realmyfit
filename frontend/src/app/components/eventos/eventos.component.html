@@ -46,7 +46,7 @@
           <div class="event-footer">
             @if(evento.capacity > 0) {
               <span class="spots-available">{{ evento.capacity }} cupos libres</span>
-              <button class="btn-primary w-100 mt-3">Reservar Cupo</button>
+              <button class="btn-primary w-100 mt-3" [routerLink]="['/inscripcion']" [state]="{ evento: evento }">Reservar Cupo</button>
             } @else {
               <span class="spots-full">Agotado</span>
               <button class="btn-secondary w-100 mt-3" disabled>Lista de Espera</button>

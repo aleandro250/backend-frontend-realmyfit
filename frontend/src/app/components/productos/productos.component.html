@@ -1,7 +1,18 @@
 <section class="page-wrapper">
   <div class="container page-header">
-    <h1 class="page-title">Pro Shop <span class="text-primary">RealMyFit</span></h1>
-    <p class="page-subtitle">Potencia tus rutinas con nuestra selección de suplementos premium, indumentaria deportiva y accesorios de alto rendimiento.</p>
+    <h1 class="page-title">Tienda <span class="text-primary">RealMyFit</span></h1>
+    <p class="page-subtitle">Potencia tus rutinas con nuestra selección de suplementos premium, indumentaria deportiva y
+      accesorios de alto rendimiento.</p>
+  </div>
+
+  <div class="container categories-wrapper pt-4 pb-5">
+    <div class="categories-scroll">
+      @for (cat of categories; track cat) {
+      <button class="category-btn" [class.active]="cat === selectedCategory" (click)="setCategory(cat)">
+        {{ cat }}
+      </button>
+      }
+    </div>
   </div>
 
   <div class="container products-grid">
@@ -20,7 +31,7 @@
 
     <!-- Products List -->
     @if (!loading && !errorMessage) {
-      @for (producto of productos; track producto.id) {
+      @for (producto of filteredProductos; track producto.id) {
         <div class="product-card glass">
           @if (producto.stock <= 0) {
             <span class="product-badge badge-danger">Agotado</span>
@@ -47,11 +58,15 @@
             <h3 class="product-name">{{ producto.name }}</h3>
             <div class="product-footer">
               <span class="product-price">${{ producto.price }}</span>
-              <button class="add-to-cart-btn" [disabled]="producto.stock <= 0" title="Añadir al carrito">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
+              <button class="add-to-cart-btn" [class.added]="producto.added"  [disabled]="producto.stock <= 0" title="Añadir al carrito" (click)="addToCart(producto)">
+                @if(!producto.added) {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                } @else {
+                  Agregado ✓
+                }
               </button>
             </div>
           </div>

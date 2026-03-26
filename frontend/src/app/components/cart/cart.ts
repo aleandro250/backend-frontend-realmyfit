@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-cart',
@@ -7,17 +8,26 @@ import { CommonModule } from '@angular/common';
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss'],
 })
-export class CartComponent {
-  cartItems = [
-    { name: '100% Whey Protein', price: 59.99, qty: 1, img: 'suplements' },
-    { name: 'Camiseta RealMyFit', price: 19.99, qty: 2, img: 'clothes' }
-  ];
+export class CartComponent implements OnInit {
+  cartItems: any[] = [];
+
+  constructor(private cartService: CartService) {}
+
+  ngOnInit() {
+    this.cartService.cart$.subscribe(items => {
+      this.cartItems = items;
+    });
+  }
 
   get subtotal() {
     return this.cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
   }
 
   get total() {
-    return this.subtotal + 5.00; // Flat tax/shipping mock
+    return this.subtotal > 0 ? this.subtotal + 5.00 : 0; // Flat tax/shipping mock
+  }
+
+  removeItem(item: any) {
+    this.cartService.removeFromCart(item);
   }
 }

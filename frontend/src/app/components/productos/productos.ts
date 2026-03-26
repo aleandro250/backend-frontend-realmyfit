@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductsService } from '../../services/products.service';
+import { CartService } from '../../services/cart.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -12,6 +13,7 @@ import { environment } from '../../../environments/environment';
 })
 export class ProductosComponent implements OnInit {
   private productsService = inject(ProductsService);
+  private cartService = inject(CartService);
 
   getImageUrl(url: string | null | undefined): string {
     if (!url) return '';
@@ -22,6 +24,26 @@ export class ProductosComponent implements OnInit {
   productos: any[] = [];
   loading = true;
   errorMessage = '';
+
+  categories = ['Todos', 'Suplementos', 'Rendimiento', 'Recuperación', 'Ropa', 'Accesorios', 'Energía'];
+  selectedCategory = 'Todos';
+
+  get filteredProductos() {
+    if (this.selectedCategory === 'Todos') {
+      return this.productos;
+    }
+    return this.productos.filter(p => p.category === this.selectedCategory || p.cat === this.selectedCategory);
+  }
+
+  setCategory(cat: string) {
+    this.selectedCategory = cat;
+  }
+
+  addToCart(producto: any) {
+    this.cartService.addToCart(producto);
+    producto.added = true;
+    setTimeout(() => producto.added = false, 800);
+  }
 
   ngOnInit() {
     this.fetchProducts();
