@@ -28,7 +28,8 @@ import { finalize } from 'rxjs';
       }
       
       @if (!loading && !errorMessage && products.length > 0) {
-        <table>
+        <!-- Vista Desktop -->
+        <table class="desktop-table">
           <thead>
             <tr>
               <th>Imagen</th>
@@ -41,16 +42,16 @@ import { finalize } from 'rxjs';
           <tbody>
             @for (product of products; track product.id) {
               <tr>
-                <td data-label="Imagen">
+                <td>
                   <div class="product-thumb glass" [style.backgroundImage]="'url(' + getImageUrl(product.imageUrl) + ')'"></div>
                 </td>
-                <td data-label="Producto">
+                <td>
                   <div class="product-name">{{ product.name }}</div>
                   <div class="product-desc">{{ product.description | slice:0:30 }}...</div>
                 </td>
-                <td data-label="Precio">\${{ product.price }}</td>
-                <td data-label="Stock">{{ product.stock }}</td>
-                <td data-label="Acciones">
+                <td>\${{ product.price }}</td>
+                <td>{{ product.stock }}</td>
+                <td>
                   <button class="btn-icon" (click)="editProduct(product)">Editar</button>
                   <button class="btn-icon delete" (click)="deleteProduct(product.id)">Eliminar</button>
                 </td>
@@ -58,6 +59,34 @@ import { finalize } from 'rxjs';
             }
           </tbody>
         </table>
+
+        <!-- Vista Mobile -->
+        <div class="mobile-cards">
+          @for (product of products; track product.id) {
+            <div class="mobile-card glass">
+              <div class="card-row">
+                <span class="card-label">Imagen</span>
+                <div class="product-thumb glass" [style.backgroundImage]="'url(' + getImageUrl(product.imageUrl) + ')'"></div>
+              </div>
+              <div class="card-row">
+                <span class="card-label">Producto</span>
+                <div class="card-value">{{ product.name }}</div>
+              </div>
+              <div class="card-row">
+                <span class="card-label">Precio</span>
+                <div class="card-value">\${{ product.price }}</div>
+              </div>
+              <div class="card-row">
+                <span class="card-label">Stock</span>
+                <div class="card-value">{{ product.stock }}</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-icon" (click)="editProduct(product)">Editar</button>
+                <button class="btn-icon delete" (click)="deleteProduct(product.id)">Eliminar</button>
+              </div>
+            </div>
+          }
+        </div>
       }
 
       @if (!loading && !errorMessage && products.length === 0) {
@@ -168,6 +197,7 @@ import { finalize } from 'rxjs';
       position: relative;
       max-height: 90vh;
       overflow-y: auto;
+      box-sizing: border-box;
     }
 
     .modal-header {
@@ -183,7 +213,7 @@ import { finalize } from 'rxjs';
     .product-form { display: flex; flex-direction: column; gap: 1.25rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.5rem; label { font-size: 0.85rem; color: rgba(255,255,255,0.6); } }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .glass-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem; color: #fff; font-family: inherit; outline: none; transition: 0.3s; &:focus { border-color: var(--color-primary, #27ae60); background: rgba(255,255,255,0.08); } }
+    .glass-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem; color: #fff; font-family: inherit; outline: none; transition: 0.3s; box-sizing: border-box; width: 100%; &:focus { border-color: var(--color-primary, #27ae60); background: rgba(255,255,255,0.08); } }
     textarea.glass-input { min-height: 100px; resize: vertical; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
     .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: 0.3s; &:hover { background: rgba(255,255,255,0.1); } }
@@ -195,51 +225,60 @@ import { finalize } from 'rxjs';
     .btn-remove-image { position: absolute; top: 5px; right: 5px; background: rgba(255, 77, 77, 0.8); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3; }
     .mt-2 { margin-top: 0.5rem; }
 
+    .mobile-cards { display: none; }
+
     /* Mobile Responsive Table and Header */
     @media (max-width: 768px) {
       .view-header { flex-direction: column; align-items: stretch; gap: 1rem; }
       .view-header button { width: 100%; }
       
-      table, thead, tbody, th, td, tr { display: block; width: 100%; box-sizing: border-box; }
-      thead { display: none; }
-      tr { 
-        margin-bottom: 1.5rem; 
-        background: rgba(255,255,255,0.02); 
-        border-radius: 12px; 
-        padding: 1rem; 
-        border: 1px solid rgba(255,255,255,0.05); 
-      }
+      .desktop-table { display: none; }
       
-      td { 
-        display: grid !important; 
-        grid-template-columns: 100px 1fr; 
-        align-items: center;
-        padding: 0.75rem 0; 
-        border-bottom: 1px solid rgba(255,255,255,0.05); 
-        text-align: right;
-        min-height: 40px;
-        color: white;
-      }
-      td:last-child { 
-        border-bottom: none; 
-        display: flex !important; 
+      .mobile-cards {
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem; 
+        gap: 1.5rem;
       }
       
-      td::before { 
-        content: attr(data-label); 
-        font-weight: 500; 
-        color: rgba(255,255,255,0.6); 
-        text-align: left; 
-        display: block;
+      .mobile-card {
+        padding: 1rem;
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.05);
       }
       
-      td > div { justify-self: end; }
-      .product-thumb { justify-self: end; }
-      .product-desc { display: none; }
-      .btn-icon { width: 100%; margin: 0; padding: 0.75rem; text-align: center; }
+      .card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      
+      .card-label {
+        font-weight: 500;
+        color: rgba(255,255,255,0.6);
+      }
+      
+      .card-value {
+        color: white;
+        text-align: right;
+        font-weight: 500;
+      }
+      
+      .card-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      
+      .card-actions .btn-icon {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        padding: 0.75rem;
+      }
     }
   `]
 })
