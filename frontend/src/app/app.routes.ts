@@ -12,8 +12,8 @@ import { AdminComponent } from './components/admin/admin';
 
 import { AdminUsersComponent } from './components/admin/users';
 import { AdminProductsComponent } from './components/admin/products';
-
 import { AdminPlaceholderComponent } from './components/admin/placeholder';
+import { AdminMembershipsComponent } from './components/admin/memberships';
 
 import { Resenas } from './components/resenas/resenas';
 import { Contacto } from './components/contacto/contacto';
@@ -35,7 +35,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'products', component: AdminProductsComponent },
-      { path: 'memberships', component: AdminPlaceholderComponent },
+      { path: 'memberships', component: AdminMembershipsComponent },
       { path: 'events', component: AdminPlaceholderComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
